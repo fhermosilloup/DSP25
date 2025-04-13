@@ -4,7 +4,7 @@
 
 /* Private Defines ---------------------------*/
 #define DMA_BUFFER_SIZE (32)	/*<! The number of samples to read/write */
-#define SAMPLE_RATE		(8000)	/*<! The sample rate (It must be defined according to the AudioKit) */
+#define SAMPLE_RATE	(8000)	/*<! The sample rate (It must be defined according to the AudioKit) */
 #define FIR_NUM_TAPS 	(11)	/*<! The number of coefficients of the filter */
 
 /* Private Funcions ---------------------------*/
