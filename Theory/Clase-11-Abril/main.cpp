@@ -8,11 +8,14 @@
 #define FIR_NUM_TAPS 	(11)	/*<! The number of coefficients of the filter */
 
 /* Private Funcions ---------------------------*/
-void FIR_LowPass_Calc(float wc, int M,float *h)
+int FIR_LowPass_Calc(float wc, int M,float *h)
 {
+	// Only allows for even filter taps
+	if( (M % 2) == 0) return 0;
+	
 	for(int k = 0; k < M; k++)
 	{
-		if(k == ((M-1)/2 +  1))
+		if(k == ((M-1)/2))
 		{
 			h[k] = wc/M_PI;
 		}
@@ -21,36 +24,54 @@ void FIR_LowPass_Calc(float wc, int M,float *h)
 			h[k] = wc/M_PI * sin(wc*(k - (M - 1)/2))/(wc*(k - (M - 1)/2));
 		}
 	}
+	
+	return 1;
 }
 
-void FIR_HighPass_Calc(float wc, int M, float *h)
+int FIR_HighPass_Calc(float wc, int M, float *h)
 {
+	// Only allows for even filter taps
+	if( (M % 2) == 0) return 0;
 	
+	return 1;
 }
 
-void FIR_BandPass_Calc(float w1, float w2, int M, float *h)
+int FIR_BandPass_Calc(float w1, float w2, int M, float *h)
 {
+	// Only allows for even filter taps
+	if( (M % 2) == 0) return 0;
 	
+	return 1;
 }
 
-void FIR_StopBand_Calc(float w1, float w2, int M, float *h)
+int FIR_StopBand_Calc(float w1, float w2, int M, float *h)
 {
+	// Only allows for even filter taps
+	if( (M % 2) == 0) return 0;
 	
+	return 1;
 }
 
 /* Global variables ---------------------------*/
-int16_t xprev[FIR_NUM_TAPS-1]; // h[n-1], h[n-2], ..., h[n-(TAPS-1)]
-float h[FIR_NUM_TAPS];
+int16_t xprev[FIR_NUM_TAPS-1];	// h[n-1], h[n-2], ..., h[n-(TAPS-1)]
+float hlp[FIR_NUM_TAPS];		// Low-pass filter impulse response buffer
 
 /* Setup --------------------------------------*/
 void setup()
 {
-	// Fir filter begin
-	float wc = 2*M_PI*500/SAMPLE_RATE;
-	FIR_LowPass_Calc(wc, FIR_NUM_TAPS, h);
-	
 	// Init serial
 	Serial.begin(115200);
+	
+	// Fir filter begin
+	float wc = 2*M_PI*500/SAMPLE_RATE;	// Fc = 500Hz
+	if( !FIR_LowPass_Calc(wc, FIR_NUM_TAPS, hlp) ) 
+	{
+		Serial.println("Invalid Number of taps");
+		while(1)
+		{
+			
+		}
+	}
 	
 	// I2S Config
 	auto cfg = kit.defaultConfig(KitInputOutput);
