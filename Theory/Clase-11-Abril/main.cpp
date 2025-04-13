@@ -54,7 +54,7 @@ int FIR_StopBand_Calc(float w1, float w2, int M, float *h)
 
 /* Global variables ---------------------------*/
 int16_t xprev[FIR_NUM_TAPS-1];	// h[n-1], h[n-2], ..., h[n-(TAPS-1)]
-float hlp[FIR_NUM_TAPS];		// Low-pass filter impulse response buffer
+float hlp[FIR_NUM_TAPS];	// Low-pass filter impulse response buffer
 
 /* Setup --------------------------------------*/
 void setup()
@@ -75,13 +75,13 @@ void setup()
 	
 	// I2S Config
 	auto cfg = kit.defaultConfig(KitInputOutput);
-	cfg.adc_input = AUDIO_HAL_ADC_INPUT_LINE2;			// MICROPHONE/AUXIN audio input
-	cfg.dac_output = AUDIO_HAL_DAC_OUTPUT_ALL;			// SPEAKER/HEADPHONE audio output
-	cfg.sample_rate = AUDIO_HAL_08K_SAMPLES;			// Sampling frequency (Fs)
+	cfg.adc_input = AUDIO_HAL_ADC_INPUT_LINE2;		// MICROPHONE/AUXIN audio input
+	cfg.dac_output = AUDIO_HAL_DAC_OUTPUT_ALL;		// SPEAKER/HEADPHONE audio output
+	cfg.sample_rate = AUDIO_HAL_08K_SAMPLES;		// Sampling frequency (Fs)
 	cfg.bits_per_sample = AUDIO_HAL_BIT_LENGTH_16BITS;	// Number of bits per sample
-	cfg.buffer_size = 32;								// DMA buffer size (Each entry stores a variable of bits_per_sample)
-	kit.begin(cfg);										// Initialize ES8388 audio codec
-	kit.setVolume(100);									// Set audio codec volume to 100
+	cfg.buffer_size = 32;					// DMA buffer size (Each entry stores a variable of bits_per_sample)
+	kit.begin(cfg);						// Initialize ES8388 audio codec
+	kit.setVolume(100);					// Set audio codec volume to 100
 }
 
 /* Main loop ----------------------------------*/
