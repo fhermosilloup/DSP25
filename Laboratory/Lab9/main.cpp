@@ -30,6 +30,18 @@
 /* Private Structures ------------------------*/
 
 /* Private Constants ------------------------*/
+const float fir_filt_coefs[11] = {0.0113,
+  0.0266,
+  0.0686,
+  0.1248,
+  0.1728,
+  0.1916,
+  0.1728,
+  0.1248,
+  0.0686,
+  0.0266,
+  0.0113};
+float xprev[10];
 
 /* Private Variables -------------------------*/
 int16_t AudioBuffer[DMA_BUFFER_SIZE];	//!< Buffer that stores the data to process
