@@ -30,8 +30,11 @@
 /* Private Structures ------------------------*/
 
 /* Private Constants ------------------------*/
-const float fir_filt_coefs[11] = {0.0113,
-  0.0266,
+//const size_t IIR_ORDER = 2;
+//const float iir_b_coefs[IIR_ORDER] = {1.1, 0.5};
+//const float iir_a_coefs[IIR_ORDER-1] = {0.3};
+const float fir_filt_coefs[11] = {0.0113, // h[0]
+  0.0266,                                 // h[1]
   0.0686,
   0.1248,
   0.1728,
@@ -43,9 +46,28 @@ const float fir_filt_coefs[11] = {0.0113,
   0.0113};
 float xprev[10];
 
+float calc_fir_filter(float x)
+{
+  // Compute convolution
+  float y = x*fir_filt_coefs[0];  // y[n] = x[n]*h[0] + x[n-1]*h[1] + ...
+  for(int i=0; i < 10; i++)
+  {
+    y += xprev[i]*fir_filt_coefs[i+1];
+  }
+
+  // Update the previous samples
+  for(int i = 9; i>0; i--)
+  {
+    xprev[i] = xprev[i-1];
+  }
+  xprev[0] = x;
+
+  return y;
+}
 /* Private Variables -------------------------*/
 int16_t AudioBuffer[DMA_BUFFER_SIZE];	//!< Buffer that stores the data to process
 AudioKit kit;
+//IIRFilter f1(IIR_ORDER, iir_a_coefs, iir_b_coefs);
 
 /* Private functions --------------------------*/
 void audiokit_gpio_init(void);
@@ -56,6 +78,9 @@ void audiokit_gpio_init(void);
 /* Setup --------------------------------------*/
 void setup()
 {
+  // iir reset
+  //f1.reset();
+
   // I2S Config
   AudioKitConfig cfg = kit.defaultConfig(KitInputOutput);
   cfg.adc_input = AUDIO_HAL_ADC_INPUT_LINE2;	// MICROPHONE/AUXIN audio input
@@ -88,7 +113,7 @@ void loop()
   // DSP processing goes here
   // "AudioBuffer" variable has both Left and Right audio samples
   // n+=2 ensures we take only the Left audio samples
-  /*for(int n = 0; n < bytesRead/2; n+=2)
+  for(int n = 0; n < bytesRead/2; n+=2)
   {
     // Get current sample: int16 to float
     float x_L = TOFLOAT(AudioBuffer[n]);
@@ -96,17 +121,16 @@ void loop()
 	
     // Process sample by sample
     // BEGIN
-    float y = f1.filter(x_L);
+    float y = calc_fir_filter(x_L);
     // END
     
     // Audio clipping Keeps audio between [-1,1]
     y = MIN(MAX(y,-1.0F),1.0F);
-    y = MIN(MAX(y,-1.0F),1.0F);
   
     // float to int16
     AudioBuffer[n] = TOINT16(y);
-    AudioBuffer[n] = TOINT16(y);
-  }*/
+    AudioBuffer[n+1] = TOINT16(y);
+  }
   
   // Signal Interpolation
   // Suspend main thread until buffer size is read (yield from interrupt)
